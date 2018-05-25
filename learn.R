@@ -38,3 +38,4 @@ l1 <- x > 3
 l2 <- is.na(x)
 l3 <- is.nan(x)
 
+labs <- paste(c("X", "Y"), 1:10, sep="")
