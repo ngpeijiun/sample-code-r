@@ -1,6 +1,7 @@
 x <- c(1, 2, 3, 4)
+# x <- 1:4
 y <- c(x, 0, x)
-v <- 2*x + y + 1
+v <- 2 * x + y + 1
 
 # Arithmetic Operators
 # + - * / ^
@@ -16,13 +17,13 @@ v <- 2*x + y + 1
 # Vector Manipulation Functions
 # match(v, lookup) tabulate(v)
 
-c <- sqrt(-17+0i)
+c <- sqrt(-17 + 0i)
 
-s1 <- seq(-5, 5, by=.2)
-s2 <- seq(from=-5, length=51, by=.2)
+s1 <- seq(-5, 5, by = 0.2)
+s2 <- seq(from = -5, length = 51, by = 0.2)
 
-s3 <- rep(x, times=5)
-s4 <- rep(x, each=5)
+s3 <- rep(x, times = 5)
+s4 <- rep(x, each = 5)
 
 l1 <- x > 3
 
@@ -38,4 +39,17 @@ l1 <- x > 3
 l2 <- is.na(x)
 l3 <- is.nan(x)
 
-labs <- paste(c("X", "Y"), 1:10, sep="")
+labs <- paste(c("X", "Y"), 1:10, sep = "")
+
+# Index Vectors
+# y <- x[!is.na(x)]
+# z <- (x+1)[!is.na(x) & x > 0]
+# c("x", "y")[rep(c(1, 2, 2, 1), times = 4)]
+# y <- x[-(1:5)]
+#
+# fruit <- c(5, 10, 1, 20)
+# names(fruit) <- c("orange", "banana", "apple", "peach")
+# lunch <- fruit[c("apple", "orange")]
+#
+# x[is.na(x)] <- 0
+# y[y < 0] <- -y[y < 0]
