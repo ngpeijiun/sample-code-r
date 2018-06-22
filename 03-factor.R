@@ -14,5 +14,11 @@ incconf95 <- tapply(incomes, state, confidence95)
 
 incttest95 <- tapply(incomes, state, t.test)
 
-mons = c("March","April","January","November","January","September","October","September","November","August","January","November","November","February","May","August","July","December","August","August","September","November","February","April")
-monsf = factor(mons, levels=c("January","February","March","April","May","June","July","August","September","October","November","December"), ordered = TRUE)
+mons <- c("March","April","January","November","January","September","October","September","November","August","January","November","November","February","May","August","July","December","August","August","September","November","February","April")
+monsf <- factor(mons, levels=c("January","February","March","April","May","June","July","August","September","October","November","December"), ordered = TRUE)
+
+statefr <- tapply(state, state, length)
+# statefr <- table(state)
+
+inctab <- table(incomes, state)
+inctabcut <- table(cut(incomes, breaks = 35 + 10 * 0:7), state)
