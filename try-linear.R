@@ -1,5 +1,5 @@
-library(gradDescent)
 library(pracma)
+library(gradDescent)
 library(dbsml)
 
 data(airquality)
@@ -59,7 +59,7 @@ axis(side = 1, at = c(seq(0, 40, by = 5)))
 # Linear Regression Using Momentum Gradient Descent (MGD) (self-made)
 
 X <- data.matrix(cbind(1, featureNorm$X))
-model_MGD <- gradientDescent(X, y, alpha = 0.1, momentum = 0.5, numIter = 100, numCost = 40)
+model_MGD <- gradientDescent(X, y, alpha = 0.3 * 0.4, momentum = 0.5, numIter = 100, numCost = 40)
 X_new <- c(1, featureScaling(c(10, 5), featureNorm$conf))
 predict_MGD <- X_new %*% model_MGD$theta
 predict_MGD <- as.numeric(predict_MGD)
@@ -70,7 +70,7 @@ axis(side = 1, at = c(seq(0, 40, by = 5)))
 # Linear Regression Using Accelerated Gradient Descent (AGD) (self-made)
 
 X <- data.matrix(cbind(1, featureNorm$X))
-model_AGD <- gradientDescent(X, y, alpha = 0.07, momentum = 0.5, accelerated = TRUE, numIter = 100, numCost = 40)
+model_AGD <- gradientDescent(X, y, alpha = 0.3 * 0.4 * 0.6, momentum = 0.5, accelerated = TRUE, numIter = 100, numCost = 40)
 X_new <- c(1, featureScaling(c(10, 5), featureNorm$conf))
 predict_AGD <- X_new %*% model_AGD$theta
 predict_AGD <- as.numeric(predict_AGD)
@@ -86,5 +86,4 @@ X_new <- c(1, featureScaling(c(10, 5), featureNorm$conf))
 predict_SD <- X_new %*% model_SD$theta
 predict_SD <- as.numeric(predict_SD)
 
-plot(model_SD$costHistory, type = "o", main = "Steepest Descent", xlab = "Iterations", ylab = "Costs", xaxt = "n")
-axis(side = 1, at = c(seq(0, 50, by = 5)))
+plot(model_SD$costHistory, type = "o", main = "Steepest Descent", xlab = "Iterations", ylab = "Costs")
