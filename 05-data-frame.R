@@ -23,9 +23,6 @@ accountants <- data.frame(home = statef, loot = incomes, shot = incomef)
 
 # as.data.frame(list)
 
-# str(accountants)
-# head(accountants)
-
 # mapply(anyNA, accountants)
 
 attach(accountants)
@@ -39,3 +36,10 @@ attach(accountants)
 
 # detach()
 # search()
+
+# Analysis
+
+# head(dataset)
+# str(dataset)
+# table(dataset$output)
+
