@@ -69,22 +69,22 @@ computeCost <- function(theta, X, y, model = "linear") {
   f(theta, X, y)
 }
 
-computeDeltaLinear <- function(theta, X, y) {
+computeGradLinear <- function(theta, X, y) {
   m <- length(y)
   prediction <- as.vector(X %*% theta)
   grad <- as.vector(1 / m * t(X) %*% (prediction - y))
 }
 
-computeDeltaLogistic <- function(theta, X, y) {
+computeGradLogistic <- function(theta, X, y) {
   m <- length(y)
   prediction <- as.vector(sigmoid(X %*% theta))
   grad <- as.vector(1 / m * t(X) %*% (prediction - y))
 }
 
-computeDelta <- function(theta, X, y, model = "linear") {
+computeGrad <- function(theta, X, y, model = "linear") {
   f <- switch(model,
-              linear = computeDeltaLinear,
-              logistic = computeDeltaLogistic)
+              linear = computeGradLinear,
+              logistic = computeGradLogistic)
   f(theta, X, y)
 }
 
@@ -106,7 +106,7 @@ gradientDescent <- function(X, y,
       theta <- theta - momentum * velocity
     }
 
-    velocity <- momentum * velocity + alpha * computeDelta(theta, X, y, model)
+    velocity <- momentum * velocity + alpha * computeGrad(theta, X, y, model)
     theta <- theta - velocity
 
     if (floor(i * numCost / numIter) > j) {
@@ -130,7 +130,7 @@ steepestDescent <- function(X, y,
   last <- 0
 
   for (i in 1:maxIter) {
-    grad <- computeDelta(theta, X, y, model)
+    grad <- computeGrad(theta, X, y, model)
     theta <- theta - grad
 
     costHistory[i] <- computeCost(theta, X, y, model)
