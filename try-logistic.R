@@ -1,6 +1,5 @@
 library(pracma)
 library(gradDescent)
-library(xgboost)
 library(dbsml)
 
 data(BreastCancer, package = "mlbench")
@@ -9,7 +8,7 @@ y <- ifelse(BreastCancer[, "Class"] == "malignant", 1, 0)
 
 #feature <- BreastCancer[, c("Cl.thickness", "Cell.size", "Cell.shape")]
 feature <- BreastCancer[, c("Cl.thickness", "Cell.size")]
-feature <- cbind(feature, featureTable(BreastCancer, "Cell.shape"))
+feature <- cbind(feature, discreteTable(BreastCancer, "Cell.shape"))
 
 feature[] <- lapply(feature[], function(x) as.numeric(as.character(x)))
 featureNorm <- featureNormalize(feature)
