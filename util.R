@@ -11,11 +11,18 @@ normalEquation <- function(X, y) {
   as.vector(solve(t(X) %*% X) %*% t(X) %*% y)
 }
 
-featureTable <- function(df, key) {
-  t <- table(as.numeric(rownames(df)), BreastCancer[[key]])
+discreteTable <- function(dataSet, key) {
+  t <- table(as.numeric(rownames(dataSet)), dataSet[[key]])
   df <- as.data.frame.matrix(t)
-  names(df) <- paste(key, levels(BreastCancer[[key]]), sep = ".")
+  names(df) <- paste(key, levels(dataSet[[key]]), sep = ".")
   df
+}
+
+discreteRound <- function(prediction) {
+  index = apply(prediction, 1, which.max)
+  prediction[col(prediction) == index] = 1
+  prediction[col(prediction) != index] = 0
+  prediction
 }
 
 featureNormalize <- function(X) {
