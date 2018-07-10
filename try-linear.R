@@ -88,7 +88,7 @@ X <- data.matrix(cbind(1, featureNorm$X))
 model_SD <- gradientDescent(X, y, alpha = 1,
                             momentum = list(auto = TRUE, accelerated = TRUE),
                             tolerance = 1e-12,
-                            numIter = 100, numCost = 40)
+                            numIter = 100)
 X_new <- c(1, featureScaling(c(10, 5), featureNorm$conf))
 predict_SD <- X_new %*% model_SD$theta
 predict_SD <- as.numeric(predict_SD)
