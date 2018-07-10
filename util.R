@@ -11,11 +11,22 @@ normalEquation <- function(X, y) {
   as.vector(solve(t(X) %*% X) %*% t(X) %*% y)
 }
 
-discreteTable <- function(dataSet, key) {
+discreteTable <- function(dataSet, key, asName = key) {
   t <- table(as.numeric(rownames(dataSet)), dataSet[[key]])
   df <- as.data.frame.matrix(t)
-  names(df) <- paste(key, levels(dataSet[[key]]), sep = ".")
+  names(df) <- paste(asName, levels(dataSet[[key]]), sep = ".")
   df
+}
+
+discreteMerge <- function(d1, d2) {
+  for (name in names(d2)) {
+    if (name %in% names(d1)) {
+      d1[name] = as.numeric(d1[name] | d2[name])
+    } else {
+      d1 <- cbind(d1, d2[name])
+    }
+  }
+  d1
 }
 
 discreteRound <- function(prediction) {
@@ -95,8 +106,27 @@ computeGrad <- function(theta, X, y, model = "linear") {
   f(theta, X, y)
 }
 
+init.momentum <- function(momentum) {
+  if (missing(momentum) || !is.list(momentum)) {
+    momentum <- list(value = 0, auto = FALSE, accelerated = FALSE)
+  }
+  if (is.null(momentum$value) || !is.integer(momentum$value)) {
+    momentum$value = 0
+  }
+  if (is.null(momentum$auto) || !is.logical(momentum$auto)) {
+    momentum$auto = FALSE
+  }
+  if (is.null(momentum$accelerated) || !is.logical(momentum$accelerated)) {
+    momentum$accelerated = FALSE
+  }
+
+  momentum
+}
+
 gradientDescent <- function(X, y,
-                            alpha = 0.1, momentum = 0, accelerated = FALSE,
+                            alpha = 0.1,
+                            momentum = init.momentum(),
+                            tolerance = 1e-2,
                             numIter = 10, numCost = 10,
                             model = "linear") {
 
@@ -104,50 +134,41 @@ gradientDescent <- function(X, y,
   theta <- numeric(n)
   velocity <- numeric(n)
 
-  numCost <- min(numIter, numCost)
-  costHistory <- numeric(numCost)
+  momentum <- init.momentum(momentum)
+  last <- 0
+
+  gradHistory <- numeric(0)
+  costHistory <- numeric(0)
   j <- 0
 
   for (i in 1:numIter) {
-    if (accelerated) {
-      theta <- theta - momentum * velocity
+    if (momentum$accelerated) {
+      theta <- theta - momentum$value * velocity
     }
 
-    velocity <- momentum * velocity + alpha * computeGrad(theta, X, y, model)
+    delta <- computeGrad(theta, X, y, model)
+    grad <- norm(matrix(delta))
+
+    if (momentum$auto) {
+      curv <- abs(grad - last)
+      momentum$value <- max(0, 1 - curv / grad)
+      last <- grad
+    }
+
+    velocity <- momentum$value * velocity + alpha * delta
     theta <- theta - velocity
+
+    gradHistory[i] = grad
 
     if (floor(i * numCost / numIter) > j) {
       j <- floor(i * numCost / numIter)
       costHistory[j] <- computeCost(theta, X, y, model)
     }
-  }
 
-  list(theta = theta, costHistory = costHistory, velocity = norm(matrix(momentum * velocity)))
-}
-
-steepestDescent <- function(X, y,
-                            tolerance = 1e-12,
-                            maxIter = 10,
-                            model = "linear") {
-
-  n <- ncol(X)
-  theta <- numeric(n)
-
-  costHistory <- numeric(0)
-  last <- 0
-
-  for (i in 1:maxIter) {
-    grad <- computeGrad(theta, X, y, model)
-    theta <- theta - grad
-
-    costHistory[i] <- computeCost(theta, X, y, model)
-
-    error <- norm(matrix(grad))
-    if (abs(error - last) < tolerance) {
+    if (grad < tolerance) {
       break
     }
-    last <- error
   }
 
-  list(theta = theta, costHistory = costHistory, error = abs(error - last))
+  list(theta = theta, costHistory = costHistory, gradHistory = gradHistory, grad = grad)
 }
