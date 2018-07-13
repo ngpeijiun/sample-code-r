@@ -40,11 +40,11 @@ featureNormalize <- function(X) {
   if (is.vector(X)) {
     mu <- mean(X)
     sigma <- sd(X)
-    norm <- (X - mu) / sigma
+    norm <- (X - mu) / ifelse(sigma > 0, sigma, 1)
   } else {
     mu <- apply(X, 2, mean)
     sigma <- apply(X, 2, sd)
-    norm <- sweep(sweep(X, 2, mu, "-"), 2, sigma, "/")
+    norm <- sweep(sweep(X, 2, mu, "-"), 2, ifelse(sigma > 0, sigma, 1), "/")
   }
 
   list(X = norm, conf = list(mu = mu, sigma = sigma))
@@ -52,9 +52,9 @@ featureNormalize <- function(X) {
 
 featureScaling <- function(X, conf) {
   if (is.vector(X)) {
-    (X - conf$mu) / conf$sigma
+    (X - conf$mu) / ifelse(conf$sigma > 0, conf$sigma, 1)
   } else {
-    sweep(sweep(X, 2, conf$mu, "-"), 2, conf$sigma, "/")
+    sweep(sweep(X, 2, conf$mu, "-"), 2, ifelse(conf$sigma > 0, conf$sigma, 1), "/")
   }
 }
 
@@ -110,14 +110,14 @@ init.momentum <- function(momentum) {
   if (missing(momentum) || !is.list(momentum)) {
     momentum <- list(value = 0, auto = FALSE, accelerated = FALSE)
   }
-  if (is.null(momentum$value) || !is.integer(momentum$value)) {
-    momentum$value = 0
+  if (is.null(momentum$value) || !is.numeric(momentum$value)) {
+    momentum$value <- 0
   }
   if (is.null(momentum$auto) || !is.logical(momentum$auto)) {
-    momentum$auto = FALSE
+    momentum$auto <- FALSE
   }
   if (is.null(momentum$accelerated) || !is.logical(momentum$accelerated)) {
-    momentum$accelerated = FALSE
+    momentum$accelerated <- FALSE
   }
 
   momentum
@@ -126,7 +126,7 @@ init.momentum <- function(momentum) {
 gradientDescent <- function(X, y,
                             alpha = 0.1,
                             momentum = init.momentum(),
-                            tolerance = 1e-2,
+                            tolerance = NA,
                             numIter = 10, numCost = 10,
                             model = "linear") {
 
@@ -165,8 +165,14 @@ gradientDescent <- function(X, y,
       costHistory[j] <- computeCost(theta, X, y, model)
     }
 
-    if (grad < tolerance) {
-      break
+    if (is.numeric(tolerance)) {
+      if (is.na(grad)) {
+        message("Warn: grad is NA")
+        break
+      }
+      if (grad < tolerance) {
+        break
+      }
     }
   }
 
