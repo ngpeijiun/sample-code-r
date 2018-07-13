@@ -1,22 +1,50 @@
 library(pracma)
 library(dbsml)
 
-# Linear Regression Using Steepest Descent (SD) (self-made)
+options(digit = 30)
 
-prediction = matrix(0, nrow(Y), ncol(Y))
+now <- Sys.time()
+
+# Logistic Regression Using Gradient Descent
+
+tolerance = c(1, 1, 1, 1, 1, 1)
+
+if (!exists("model_All")) {
+  model_All = list()
+}
+
+if (!exists("prediction")) {
+  prediction = matrix(0, nrow(Y), ncol(Y))
+}
+
+X <- data.matrix(cbind(1, feature_norm$X))
 
 for (i in 1:ncol(Y)) {
   y <- Y[, i]
   
-  X <- data.matrix(cbind(1, featureNorm$X))
-  model_SD <- steepestDescent(X, y, tolerance = 1e-2, maxIter = 200, model = "logistic")
-  X_new <- data.matrix(cbind(1, featureScaling(feature, featureNorm$conf)))
-  prediction[, i] <- as.vector(sigmoid(X %*% model_SD$theta))
+  model <- gradientDescent(X, y,
+                           alpha = 1,
+                           momentum = list(auto = TRUE, accelerated = TRUE),
+                           tolerance = tolerance[i],
+                           numIter = 100,
+                           model = "logistic")
   
-  plot(model_SD$costHistory, type = "o", main = names(Y)[i], xlab = "Iterations", ylab = "Costs")
+  print(length(model$gradHistory))
+  prediction[, i] <- as.vector(sigmoid(X %*% model$theta))
+  
+  plot(model$gradHistory, type = "o", main = names(Y)[i], xlab = "Iterations", ylab = "Gradients")
+  
+  model_All[[i]] <- model
 }
 
-prediction <- discreteRound(prediction)
-ties = apply(Y == prediction, 1, all)
+prediction_round <- discreteRound(prediction)
+ties = apply(Y == prediction_round, 1, all)
 
-#mlc[which(!ties),]
+#head(which(!ties))
+#dataset[123,]
+#prediction_round[123,]
+#prediction[123,]
+#write.table(dataset[which(!ties),], file = "wrong_prediction.csv", row.names = FALSE, sep = ",")
+
+then <- Sys.time()
+print(then - now)
