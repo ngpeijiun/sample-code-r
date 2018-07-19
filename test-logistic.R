@@ -5,11 +5,9 @@ now <- Sys.time()
 
 # Logistic Regression Testing
 
-if (!exists("prediction")) {
-  prediction = matrix(0, nrow(Y), ncol(Y))
-}
+prediction = matrix(0, nrow(Y), ncol(Y))
 
-X_new <- data.matrix(cbind(1, featureScaling(feature, norm)))
+X_new <- data.matrix(cbind(1, featureScaling(feature, feature_norm$conf)))
 
 for (i in 1:ncol(Y)) {
   prediction[, i] <- as.vector(sigmoid(X_new %*% model_All[[i]]$theta))
