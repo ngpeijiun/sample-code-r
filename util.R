@@ -200,3 +200,33 @@ gradientDescent <- function(X, y,
 
   list(theta = theta, costHistory = costHistory, gradHistory = gradHistory, grad = grad)
 }
+
+countTruePositive <- function(p, y) {
+  sum(p == y & p == 1)
+}
+
+countFalsePositive <- function(p, y) {
+  sum(p != y & p == 1)
+}
+
+countTrueNegative <- function(p, y) {
+  sum(p == y & p == 0)
+}
+
+countFalseNegative <- function(p, y) {
+  sum(p != y & p == 0)
+}
+
+precision <- function(p, y) {
+  countTruePositive(p, y) / (countTruePositive(p, y) + countFalsePositive(p, y))
+}
+
+recall <- function(p, y) {
+  countTruePositive(p, y) / (countTruePositive(p, y) + countFalseNegative(p, y))
+}
+
+F1Score <- function(p, y) {
+  pre <- precision(p, y)
+  r <- recall(p, y)
+  2 * pre * r / (pre + r)
+}
