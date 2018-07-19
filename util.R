@@ -11,10 +11,32 @@ normalEquation <- function(X, y) {
   as.vector(solve(t(X) %*% X) %*% t(X) %*% y)
 }
 
+concatHeader <- function(dataset, header, asName = NA, withBlank = FALSE) {
+  if (is.data.frame(header)) {
+    header = levels(header[, 1])
+  }
+  if (withBlank) {
+    numCol <- length(header) + 1
+    uniques <- sort(c(header, ""))
+  } else {
+    numCol = length(header)
+    uniques <- sort(header)
+  }
+  a <- data.frame(matrix(0, nrow = nrow(dataset), ncol = numCol))
+  if (is.na(asName)) {
+    names(a) <- uniques
+  } else {
+    names(a) <- paste(asName, uniques, sep = ".")
+  }
+  b = cbind(dataset, a)
+}
+
 discreteTable <- function(dataSet, key, asName = key) {
   t <- table(as.numeric(rownames(dataSet)), dataSet[[key]])
   df <- as.data.frame.matrix(t)
-  names(df) <- paste(asName, levels(dataSet[[key]]), sep = ".")
+  if (ncol(df) > 0) {
+    names(df) <- paste(asName, levels(dataSet[[key]]), sep = ".")
+  }
   df
 }
 
