@@ -7,7 +7,8 @@ now <- Sys.time()
 
 # Logistic Regression Using Gradient Descent
 
-tolerance = c(1, 1, 1, 1, 1, 1)
+alpha = c(0.01, 0.01, 0.01, 0.01, 0.01, 0.01)
+tolerance = c(1e-1, 1e-1, 1e-1, 1e-1, 1e-1, 1e-1)
 
 if (!exists("model_All")) {
   model_All = list()
@@ -17,16 +18,17 @@ if (!exists("prediction")) {
   prediction = matrix(0, nrow(Y), ncol(Y))
 }
 
+feature_norm <- featureNormalize(feature)
 X <- data.matrix(cbind(1, feature_norm$X))
 
 for (i in 1:ncol(Y)) {
   y <- Y[, i]
   
   model <- gradientDescent(X, y,
-                           alpha = 1,
+                           alpha = alpha[i],
                            momentum = list(auto = TRUE, accelerated = TRUE),
                            tolerance = tolerance[i],
-                           numIter = 100,
+                           numIter = 50,
                            model = "logistic")
   
   print(length(model$gradHistory))
