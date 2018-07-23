@@ -6,21 +6,21 @@ dataset <- read.table("data", header = TRUE, sep = ",")
 
 m <- nrow(dataset)
 
-Y <- discreteTable(dataset, "Output")
+output <- discreteTable(dataset, "Output")
 
 feature <- data.frame(matrix(0, nrow = m, ncol = 0))
 
 header <- read.table("data.header.feature.1.txt", header = TRUE, sep = ",")
 feature <- concatHeader(feature, header = header, asName = "Feature.1")
 header <- read.table("data.header.feature.2.txt", header = TRUE, sep = ",")
-feature <- concatHeader(feature, header = header, asName = "Feature.2")
-feature <- concatHeader(feature, header = "Feature.3")
+feature <- concatHeader(feature, header = header, asName = "Feature.2", withBlank = TRUE)
+feature <- concatHeader(feature, header = c("Feature.3"))
 header <- read.table("data.header.feature.4.txt", header = TRUE, sep = ",")
 feature <- concatHeader(feature, header = header, asName = "Feature.A")
 header <- read.table("data.header.feature.5.txt", header = TRUE, sep = ",")
-feature <- concatHeader(feature, header = header, asName = "Feature.B")
+feature <- concatHeader(feature, header = header, asName = "Feature.B", withBlank = TRUE)
 header <- read.table("data.header.feature.6.txt", header = TRUE, sep = ",")
-feature <- concatHeader(feature, header = header, asName = "Feature.C")
+feature <- concatHeader(feature, header = header, asName = "Feature.C", withBlank = TRUE)
 
 feature <- discreteMerge(feature, discreteTable(dataset, "Feature.1"))
 feature <- discreteMerge(feature, discreteTable(dataset, "Feature.2.1", asName = "Feature.2"))
