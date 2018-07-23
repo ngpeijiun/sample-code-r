@@ -5,6 +5,8 @@ now <- Sys.time()
 
 # Logistic Regression Testing
 
+Y <- output
+
 prediction = matrix(0, nrow(Y), ncol(Y))
 
 X_new <- data.matrix(cbind(1, featureScaling(feature, feature_norm$conf)))
