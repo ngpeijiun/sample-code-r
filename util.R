@@ -58,6 +58,23 @@ discreteRound <- function(prediction) {
   prediction
 }
 
+oversampling <- function(X, Y) {
+  ratio <- apply(Y, 2, sum)
+  R <- max(ratio)
+  for (i in 1:ncol(Y)) {
+    if (ratio[i] < R && R / ratio[i] > 2) {
+      r <- floor(R / ratio[i])
+      dupX <- X[which(Y[, i] == 1), ]
+      dupY <- Y[which(Y[, i] == 1), ]
+      for (j in 1:r) {
+        X <- rbind(X, dupX)
+        Y <- rbind(Y, dupY)
+      }
+    }
+  }
+  list(X = X, Y = Y)
+}
+
 featureNormalize <- function(X) {
   if (is.vector(X)) {
     mu <- mean(X)
