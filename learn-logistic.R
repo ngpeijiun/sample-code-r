@@ -18,7 +18,6 @@ if (!exists("prediction")) {
   prediction = matrix(0, nrow(Y), ncol(Y))
 }
 
-feature_norm <- featureNormalize(feature)
 X <- data.matrix(cbind(1, feature_norm$X))
 
 for (i in 1:ncol(Y)) {
@@ -28,7 +27,8 @@ for (i in 1:ncol(Y)) {
                            alpha = alpha[i],
                            momentum = list(auto = TRUE, accelerated = TRUE),
                            tolerance = tolerance[i],
-                           numIter = 50,
+                           lambda = list(auto = TRUE),
+                           numIter = 2000,
                            model = "logistic")
   
   print(length(model$gradHistory))
@@ -47,6 +47,10 @@ ties = apply(Y == prediction_round, 1, all)
 #prediction_round[123,]
 #prediction[123,]
 #write.table(dataset[which(!ties),], file = "wrong_prediction.csv", row.names = FALSE, sep = ",")
+
+# Actually no need to achieve very high precision, because it may not be able to generalize well to new examples
+low_precision <- which(prediction[which(prediction_round == 1)] < 0.8)
+#which(prediction_round == 1)[low_precision] %% m
 
 then <- Sys.time()
 print(then - now)
