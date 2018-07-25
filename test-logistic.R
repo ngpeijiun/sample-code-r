@@ -24,5 +24,9 @@ ties = apply(Y == prediction_round, 1, all)
 #prediction[123,]
 #write.table(dataset[which(!ties),], file = "wrong_prediction.csv", row.names = FALSE, sep = ",")
 
+# Actually no need to achieve very high precision, because it may not be able to generalize well to new examples
+low_precision <- which(prediction[which(prediction_round == 1)] < 0.8)
+#which(prediction_round == 1)[low_precision] %% m
+
 then <- Sys.time()
 print(then - now)
