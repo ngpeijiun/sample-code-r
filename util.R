@@ -119,11 +119,13 @@ computeCostLogistic <- function(theta, X, y) {
   J <- 1 / m * sum(cost)
 }
 
-computeCost <- function(theta, X, y, model = "linear") {
+computeCost <- function(theta, X, y, lambda = 0, model = "linear") {
   f <- switch(model,
               linear = computeCostLinear,
               logistic = computeCostLogistic)
-  f(theta, X, y)
+  m <- length(y)
+  penalty <- theta[-1] ^ 2
+  f(theta, X, y) + lambda / (2 * m) * sum(penalty)
 }
 
 computeGradLinear <- function(theta, X, y) {
@@ -138,11 +140,13 @@ computeGradLogistic <- function(theta, X, y) {
   grad <- as.vector(1 / m * t(X) %*% (prediction - y))
 }
 
-computeGrad <- function(theta, X, y, model = "linear") {
+computeGrad <- function(theta, X, y, lambda = 0, model = "linear") {
   f <- switch(model,
               linear = computeGradLinear,
               logistic = computeGradLogistic)
-  f(theta, X, y)
+  m <- length(y)
+  penalty <- theta[-1]
+  f(theta, X, y) + lambda / m * sum(penalty)
 }
 
 init.momentum <- function(momentum) {
@@ -162,19 +166,40 @@ init.momentum <- function(momentum) {
   momentum
 }
 
+init.lambda <- function(lambda) {
+  if (missing(lambda) || !is.list(lambda)) {
+    lambda <- list(value = 0, auto = FALSE)
+  }
+  if (is.null(lambda$value) || !is.numeric(lambda$value)) {
+    lambda$value <- 0
+  }
+  if (is.null(lambda$auto) || !is.logical(lambda$auto)) {
+    lambda$auto <- FALSE
+  }
+
+  lambda
+}
+
 gradientDescent <- function(X, y,
                             alpha = 0.1,
                             momentum = init.momentum(),
                             tolerance = NA,
+                            lambda = init.lambda(),
                             numIter = 10, numCost = 10,
                             model = "linear") {
 
+  m <- nrow(X)
   n <- ncol(X)
   theta <- numeric(n)
   velocity <- numeric(n)
 
   momentum <- init.momentum(momentum)
   last <- 0
+
+  lambda <- init.lambda(lambda)
+  if (lambda$auto) {
+    lambda$value <- m / 10
+  }
 
   gradHistory <- numeric(0)
   costHistory <- numeric(0)
@@ -185,7 +210,7 @@ gradientDescent <- function(X, y,
       theta <- theta - momentum$value * velocity
     }
 
-    delta <- computeGrad(theta, X, y, model)
+    delta <- computeGrad(theta, X, y, lambda$value, model)
     grad <- norm(matrix(delta))
 
     if (momentum$auto) {
@@ -201,7 +226,7 @@ gradientDescent <- function(X, y,
 
     if (floor(i * numCost / numIter) > j) {
       j <- floor(i * numCost / numIter)
-      costHistory[j] <- computeCost(theta, X, y, model)
+      costHistory[j] <- computeCost(theta, X, y, lambda$value, model)
     }
 
     if (is.numeric(tolerance)) {
@@ -215,7 +240,7 @@ gradientDescent <- function(X, y,
     }
   }
 
-  list(theta = theta, costHistory = costHistory, gradHistory = gradHistory, grad = grad)
+  list(theta = theta, costHistory = costHistory, gradHistory = gradHistory, grad = grad, lambda = lambda$value)
 }
 
 countTruePositive <- function(p, y) {
