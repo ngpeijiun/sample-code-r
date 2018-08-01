@@ -260,11 +260,23 @@ countFalseNegative <- function(p, y) {
 }
 
 precision <- function(p, y) {
-  countTruePositive(p, y) / (countTruePositive(p, y) + countFalsePositive(p, y))
+  trueP <- countTruePositive(p, y)
+  falseP <- countFalsePositive(p, y)
+  if (trueP == 0) {
+    0
+  } else {
+    trueP / (trueP + falseP)
+  }
 }
 
 recall <- function(p, y) {
-  countTruePositive(p, y) / (countTruePositive(p, y) + countFalseNegative(p, y))
+  trueP <- countTruePositive(p, y)
+  falseN <- countFalseNegative(p, y)
+  if (trueP == 0) {
+    0
+  } else {
+    trueP / (trueP + falseN)
+  }
 }
 
 F1Score <- function(p, y) {
