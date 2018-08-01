@@ -62,7 +62,7 @@ oversampling <- function(X, Y) {
   ratio <- apply(Y, 2, sum)
   R <- max(ratio)
   for (i in 1:ncol(Y)) {
-    if (ratio[i] < R && R / ratio[i] > 2) {
+    if (ratio[i] < R && ratio[i] > 0 && R / ratio[i] > 2) {
       r <- floor(R / ratio[i])
       dupX <- X[which(Y[, i] == 1), ]
       dupY <- Y[which(Y[, i] == 1), ]
